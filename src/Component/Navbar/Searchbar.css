@@ -1,0 +1,57 @@
+
+.inputGroup {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 1em 0 1em 0;
+    width: 500px;
+    position: relative;
+  }
+  
+  .inputGroup input {
+    font-size: 100%;
+    outline: none;
+    border: 2px solid #817A7A;
+    background-color: #B7B7B7;
+    border-radius: 20px;
+    width: 90%;
+  }
+  
+  .inputGroup label {
+    font-size: 100%;
+    position: absolute;
+    left: 0;
+    padding: 0.5em;
+    margin-left: 0.9em;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    color: rgb(100, 100, 100);
+  }
+  
+  .inputGroup :is(input:focus, input:valid)~label {
+    transform: translateY(-70%) scale(.9);
+    margin: 0em;
+    margin-left: 1.3em;
+    padding: 0.4em;
+    background-color: transparent;
+  }
+  
+  .inputGroup :is(input:focus, input:valid) {
+    border-color: rgb(150, 150, 200);
+  }
+
+
+  @media (max-width: 810px) {
+
+  .inputGroup input {
+    padding: 0.9em;
+  }
+
+  .inputGroup label {
+    padding: 0.9em;
+  }
+}
+
+@media (max-width: 1400px) {
+  .position {
+    display: none; /* Masquer la Searchbar lorsque l'écran est inférieur à 750px */
+  }
+}

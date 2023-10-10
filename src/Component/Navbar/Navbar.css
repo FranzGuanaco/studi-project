@@ -1,0 +1,60 @@
+.navbar {
+    display: flex;
+    height: 70px;
+    justify-content: space-between;; /* Centre horizontalement */
+    align-items: center; /* Centre verticalement */
+    list-style: none; /* Supprime les puces */
+    padding: 0;
+    width: 100%;
+    background-color: #1B1B1B; /* Ajoutez la couleur de fond souhaitée */}
+  
+  .navbar-list {
+    display: flex;
+    justify-content: flex-end; /* Aligner les icônes à droite */
+    padding-right: 100px; /* Ajout d'un espace à droite des icônes */
+   
+  }
+  
+  .navbar-item {
+    margin-left: 65px;
+  }
+  
+  .navbar-center {
+    width: 100%; /* Occuper toute la largeur disponible */
+  }
+
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 2%;
+  }
+  
+  li {
+    float: right;
+  }
+  
+  li a {
+    display: block;
+  }
+  
+  /* ... Autres règles CSS ... */
+
+  @media (max-width: 560px) {
+    .navbar {
+      width: 605px;
+    }
+  }
+
+  .Logo {
+    display: flex;
+    height: 122px;
+    justify-content: space-between;; /* Centre horizontalement */
+    align-items: center;
+  }
+
+  .image-container {
+    display: inline-block;
+  
+    padding: 5px; /* Marge intérieure pour l'espace autour de l'image */
+  }
+  

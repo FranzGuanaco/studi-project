@@ -1,0 +1,21 @@
+/* SquareWithImage.css */
+
+.square {
+    width: 280px;
+    height: 280px;
+    background-color: #94445d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .square-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .DescriptionStyle{
+    margin-top: 1%;
+    font-size: 14px;
+  }

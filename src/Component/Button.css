@@ -1,0 +1,15 @@
+.edit-btn {
+    position: relative;
+    display: inline-block;
+    width: 130px;
+    height: 50px;
+    padding: 10px 20px;
+    color: #fff;
+    font-size: 16px;
+    border: none;
+    border-radius: 40px; /* Arrondi les angles du bouton */
+    cursor: pointer;
+  }
+
+
+  

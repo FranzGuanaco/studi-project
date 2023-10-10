@@ -1,0 +1,44 @@
+/* Default styles */
+input[type="submit"] {
+    background-color: rgb(0, 0, 0);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    width: 30%;
+    height: 40px;
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  input[type="text"],
+  input[type="password"] {
+    border-radius: 10px;
+    border-width: 1px;
+    border-color: #C6C6C6;
+    height: 30px;
+    width: 80%; /* nouvelle valeur pour le width */
+    margin: auto; /* ajout de la propriété margin pour centrer */
+  }
+  
+  
+  
+  .formBox {
+    margin-top: 15%;
+ 
+  }
+  
+  
+  @media only screen and (max-width: 380px) {
+    .formBox {
+      margin-top: 30%;
+      width: 65%;
+      margin: auto; /* Centrer le formulaire */
+    }
+    
+    input[type="submit"], input[type="text"], input[type="password"] {
+      height: 30px;
+      font-size: 14px;
+      width: 90%;
+    }
+  }
+  

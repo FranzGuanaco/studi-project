@@ -1,0 +1,38 @@
+.category-box {
+    width: 550px;
+    height: 40px;
+    background-color: #1B1B1B;
+    color: white;
+    position: relative; /* Position relative pour contenir les pseudo-éléments */
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  
+  .category-box::before {
+    content: ''; /* Pseudo-élément ::before */
+    position: absolute;
+    top: 0;
+    right: -40px; /* Réglez la distance d'arrondi pour la partie droite */
+    width: 240px;
+    height: 40px;
+    background-color: #1B1B1B;
+    border-radius: 0 25px 25px 0; /* Coin arrondi à droite */
+    align-items: center; /* Centrer verticalement */
+  }
+  
+  @media (max-width: 880px) {
+    .category-box {
+      width: 330px;
+      height: 40px;
+    }
+    .category-box::before {
+      width: 20px;
+    height: 40px;
+    right: -20px;
+    }
+  }
+  
