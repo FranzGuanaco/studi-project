@@ -7,18 +7,24 @@ import Button from '../Button';
 
 
 function Navbar(props) {
+    const showSearchbar = props.showSearchbar; 
+    const showWelcomeText = props.showWelcomeText; 
+
     return (
         <nav className="navbar" >
+            <div className="position" style={{paddingLeft: "5%", position:"relative", color:"white"}}>
+            {showWelcomeText && <h3>Hello</h3>}
+            </div>
            <div className="navbar-center">
-                <div className="position" style={{paddingLeft: "50%", position:"relative"}}>
-                <Searchbar />
+                <div className="position" style={{paddingLeft: "42%", position:"relative"}}>
+                {showSearchbar && <Searchbar />}
             </div>
             </div>
             
          <ul className="navbar-list">
         <li className="navbar-item">
          <Link to="/result">
-         <Button/>
+         <Button color={props.buttonColor}/>
          </Link>
         </li>
         <li className="navbar-item" >
@@ -30,8 +36,6 @@ function Navbar(props) {
         </li>
         </ul>
         
-
-        
     </nav>
 
     );
@@ -39,6 +43,9 @@ function Navbar(props) {
 
 Navbar.defaultProps = {
     categoryIcon: categorie_icon,
+    showSearchbar: true,
+    showWelcomeText: false,
+    buttonColor:'#9a9a9a'
    
   }
 
