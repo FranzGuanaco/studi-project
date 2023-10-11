@@ -1,8 +1,6 @@
 /* SquareWithImage.css */
 
 .square {
-    width: 280px;
-    height: 280px;
     background-color: #94445d;
     display: flex;
     align-items: center;
