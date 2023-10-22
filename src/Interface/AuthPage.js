@@ -1,6 +1,7 @@
 import React from "react";
 import { render } from "react-dom";
 import "../BoxId.css"
+import axios from "axios";
 import jwtDecode from "jwt-decode";
 
 class AuthPage extends React.Component {
@@ -9,61 +10,62 @@ class AuthPage extends React.Component {
 
     this.state = {
       userName: "",
-      authToken: null, // Nouvelle propriété pour stocker le token
+      password: null, // Nouvelle propriété pour stocker le token
     };
   }
 
-  handleInputChange = (event) => {
-    const value = event.target.value;
-    this.setState({
-      userName: value
-    });
+  componentDidMount() {
+    axios.get('http://localhost:3001/auth')
+      .then(response => {
+        console.log(response.data);
+      })
+      .catch(error => {
+        console.error('Erreur lors de la requête');
+      });
   }
 
+
+  handleUsernameChange = (event) => {
+    this.setState({ userName: event.target.value });
+  }  
+
+  // changement d'information pour le nom de l'utilisateur et le mdp
   handleSubmit = async (event) => {
     event.preventDefault();
-    const { userName } = this.state;
+    const user = event.target.username.value;
+    const pwrd = event.target.password.value;
 
-    // Récupérer le mot de passe du formulaire
-    const password = event.target.password.value;
+    console.log("Nom d'utilisateur:", user);
+    console.log("Mot de passe:", pwrd);
 
-    // Envoyer les informations de connexion au serveur
-    try {
-      const response = await fetch('http://localhost:3001/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: userName, password }),
-      });
-
-      if (response.ok) {
-        try {
-          const data = await response.json();
-          
-          const authToken = data.token; // Supposons que le token est retourné par le serveur
-          
-          this.setState({ userName}, () => {
-            console.log("État mis à jour avec le nom d'utilisateur :", this.state.userName);
-            
-            const decodeToken = jwtDecode(authToken)
-            // Construire l'URL avec le nom d'utilisateur et rediriger
-            const redirectUrl = `/Homepage?username=${encodeURIComponent({decodeToken})}`;
-            window.location.href = redirectUrl;
-          });
-        } catch (error) {
-          console.log('Error parsing response:', error);
+  
+    // Envoyer une requête POST à l' API
+    axios.post('http://localhost:3001/api/user', {
+      userName: user,
+      password: pwrd,
+    })
+    .then(response => {
+      // Vérifier la réponse de l'API ici
+      const utilisateurs = response.data; 
+      // Vérifier si le nom d'utilisateur et le mot de passe correspondent à un utilisateur dans la liste
+      const utilisateurTrouve = utilisateurs.find(utilisateur => {
+      return utilisateur.nom_utilisateur === user && utilisateur.mot_de_passe === pwrd;
+  });
+        if (utilisateurTrouve) {
+        console.log('Authentification réussie !');
+        } else {
+        console.log('Authentification échouée.');
         }
-      } else {
-        console.log('Invalid credentials');
-      }
-    } catch (error) {
-      console.log('Error:', error);
-    }
+    })
+    .catch(error => {
+      console.error('Erreur lors de l\'authentification :', error);
+    });
   }
+  
 
   render() {
     const { userName } = this.state;
+    const {password} = this.state
 
     return (
       <div className="Id">
@@ -72,9 +74,9 @@ class AuthPage extends React.Component {
      
         <form className="formBox" onSubmit={this.handleSubmit}>
           <label htmlFor="username">{this.props.title} :</label>
-          <input type="text" id="username" name="userName" value={userName} placeholder="" onChange={this.handleInputChange} />
+          <input type="text" id="username" name="username" value={userName} onChange={this.handleUsernameChange} placeholder="" />
           <label htmlFor="password">{this.props.title2}</label>
-          <input type="password" id="password" name="password" />
+          <input type="password" id="password" name="password" value={password}/>
           <input type="submit" value="Se connecter"/>
         </form>
       </div>

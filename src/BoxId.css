@@ -8,6 +8,7 @@ input[type="submit"] {
     height: 40px;
     margin-top: 20px;
     text-align: center;
+    margin: auto;
   }
   
   input[type="text"],
@@ -17,6 +18,10 @@ input[type="submit"] {
     border-color: #C6C6C6;
     height: 30px;
     width: 80%; /* nouvelle valeur pour le width */
+    margin: auto; /* ajout de la propriété margin pour centrer */
+  }
+
+  label{
     margin: auto; /* ajout de la propriété margin pour centrer */
   }
   
