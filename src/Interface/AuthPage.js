@@ -24,44 +24,36 @@ class AuthPage extends React.Component {
       });
   }
 
-
   handleUsernameChange = (event) => {
     this.setState({ userName: event.target.value });
   }  
 
   // changement d'information pour le nom de l'utilisateur et le mdp
-  handleSubmit = async (event) => {
+  handleSubmit = (event) => {
     event.preventDefault();
-    const user = event.target.username.value;
-    const pwrd = event.target.password.value;
-
-    console.log("Nom d'utilisateur:", user);
-    console.log("Mot de passe:", pwrd);
-
-  
-    // Envoyer une requête POST à l' API
-    axios.post('http://localhost:3001/api/user', {
-      userName: user,
-      password: pwrd,
+    
+    axios.post('http://localhost:3001/login', {
+      nom_utilisateur: this.state.userName,
+      mot_de_passe: this.state.password
     })
     .then(response => {
-      // Vérifier la réponse de l'API ici
-      const utilisateurs = response.data; 
-      // Vérifier si le nom d'utilisateur et le mot de passe correspondent à un utilisateur dans la liste
-      const utilisateurTrouve = utilisateurs.find(utilisateur => {
-      return utilisateur.nom_utilisateur === user && utilisateur.mot_de_passe === pwrd;
-  });
-        if (utilisateurTrouve) {
-        console.log('Authentification réussie !');
-        } else {
-        console.log('Authentification échouée.');
-        }
+      if(response.data.status === 'success') {
+        alert(response.data.message);
+        // Ici, vous pouvez également rediriger l'utilisateur vers une autre page ou effectuer d'autres actions selon les besoins.
+        const redirectUrl = `/Homepage?username=${this.state.userName}`;
+        window.location.href = redirectUrl;
+      } else {
+        alert(response.data.message);
+      }
     })
     .catch(error => {
-      console.error('Erreur lors de l\'authentification :', error);
+      console.error('Erreur lors de la requête:', error);
     });
   }
   
+  handlePasswordChange = (event) => {
+    this.setState({ password: event.target.value });
+  }
 
   render() {
     const { userName } = this.state;
@@ -76,7 +68,7 @@ class AuthPage extends React.Component {
           <label htmlFor="username">{this.props.title} :</label>
           <input type="text" id="username" name="username" value={userName} onChange={this.handleUsernameChange} placeholder="" />
           <label htmlFor="password">{this.props.title2}</label>
-          <input type="password" id="password" name="password" value={password}/>
+          <input type="password" id="password" name="password" value={password} onChange={this.handlePasswordChange}/>
           <input type="submit" value="Se connecter"/>
         </form>
       </div>

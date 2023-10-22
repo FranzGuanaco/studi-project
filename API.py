@@ -18,18 +18,25 @@ db_connection = psycopg2.connect(
 print("API Flask en cours d'exécution. Accédez à l'API via http://localhost:3000/")
 
 # Route pour récupérer les données de la table "Utilisateurs"
-@app.route('/api/user', methods=['GET'])
+@app.route('/login', methods=['POST'])
 @cross_origin(origins=['http://localhost:3000'])
-def get_utilisateurs():
-    print('La route /api/user a été appelée.')
-    try:
-        cursor = db_connection.cursor()
-        cursor.execute('SELECT * FROM Utilisateurs')
-        utilisateurs = cursor.fetchall()
-        cursor.close()
-        return jsonify(utilisateurs)
-    except Exception as e:
-        return str(e), 500
+    
+def login():
+    data = request.json
+    nom_utilisateur = data['nom_utilisateur']
+    mot_de_passe = data['mot_de_passe']
+
+    cursor = db_connection.cursor()
+    cursor.execute('SELECT * FROM Utilisateurs WHERE nom_utilisateur = %s AND mot_de_passe = %s;', (nom_utilisateur, mot_de_passe))
+    utilisateur = cursor.fetchone()
+    cursor.close()
+
+    if utilisateur:
+        return jsonify({'status': 'success', 'message': 'Authentification réussie!'})
+    else:
+        return jsonify({'status': 'failure', 'message': 'Authentification échouée!'}), 401
+
+
 
 # Route pour l'authentification
 @app.route('/auth', methods=['GET'])
