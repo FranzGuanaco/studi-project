@@ -44,5 +44,37 @@ def login():
 def test_route():
     return jsonify({'message': 'Ceci est un message de test depuis l\'API.'})
 
+
+
+@app.route('/produits', methods=['GET'])
+@cross_origin(origins=['http://localhost:3000'])
+def get_produits():
+    cursor = db_connection.cursor()
+    cursor.execute('SELECT * FROM Produits;')
+    produits = cursor.fetchall()
+    cursor.close()
+
+    response = []
+
+    for produit in produits:
+        item = {
+            'id': produit[0],
+            'libelle': produit[1],
+            'description': produit[2],
+            'prix': produit[3],
+            'image_url': produit[4],
+            'categorie_id': produit[5],
+            'statut_promotion': produit[6],
+            'image': produit[7]
+        }
+        response.append(item)
+
+    return jsonify(response)
+
+
+
+
 if __name__ == '__main__':
     app.run(debug=True, port=3001)
+
+

@@ -40,7 +40,7 @@ class AuthPage extends React.Component {
       if(response.data.status === 'success') {
         alert(response.data.message);
         // Ici, vous pouvez également rediriger l'utilisateur vers une autre page ou effectuer d'autres actions selon les besoins.
-        const redirectUrl = `/Homepage?username=${this.state.userName}`;
+        const redirectUrl = `/Admin?username=${this.state.userName}`;
         window.location.href = redirectUrl;
       } else {
         alert(response.data.message);
