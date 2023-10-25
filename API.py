@@ -59,7 +59,7 @@ def get_produits():
     for produit in produits:
         item = {
             'id': produit[0],
-            'libelle': produit[1],
+            'libelle': produit[1], 
             'description': produit[2],
             'prix': produit[3],
             'image_url': produit[4],
@@ -72,6 +72,22 @@ def get_produits():
     return jsonify(response)
 
 
+
+@app.route('/nvproduits', methods=['POST'])
+@cross_origin(origins=['http://localhost:3000'])
+def add_product():
+    print("Requête reçue pour ajouter un produit")
+    product_data = request.json
+
+    cursor = db_connection.cursor()
+    cursor.execute(
+    "INSERT INTO produits (libelle, description, prix, image_url, categorie_id, statut_promotion) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id;",
+    (product_data['libelle'], product_data['description'], product_data['prix'], product_data['image_url'], product_data['categorie_id'], product_data['statut_promotion']))
+    product_id = cursor.fetchone()[0]
+    db_connection.commit()
+    cursor.close()
+
+    return jsonify({"id": product_id}), 201  # 201 Created
 
 
 if __name__ == '__main__':
