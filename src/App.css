@@ -40,7 +40,7 @@
 .Boxcontent {
   width: 100px; /* Largeur du carré */
   height: 100px; /* Hauteur du carré */
-  border: 2px solid red; /* Bordure rouge de 2 pixels */
+
 }
 
 
@@ -153,4 +153,9 @@ form {
 
 .circular-button:hover {
   background-color: #0069d9;
+}
+
+.label-fixed-width {
+  display: inline-block;
+  width: 120px; /* Vous pouvez ajuster cette valeur en fonction de la taille du label le plus long */
 }
