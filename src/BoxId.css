@@ -20,12 +20,6 @@ input[type="submit"] {
     width: 80%; /* nouvelle valeur pour le width */
     margin: auto; /* ajout de la propriété margin pour centrer */
   }
-
-  label{
-    margin: auto; /* ajout de la propriété margin pour centrer */
-  }
-  
-  
   
   .formBox {
     margin-top: 15%;
