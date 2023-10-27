@@ -123,7 +123,33 @@ def test_route():
 @cross_origin(origins=['http://localhost:3000'])
 def get_produits():
     cursor = db_connection.cursor()
-    cursor.execute('SELECT * FROM Produits;')
+
+    # Récupérer le paramètre categorie_id (s'il est fourni)
+    categorie_id = request.args.get('categorie_id')
+    
+    # Construisez la requête de base
+    query = '''
+        SELECT 
+            produits.id, 
+            produits.libelle, 
+            produits.description, 
+            produits.prix, 
+            produits.image_url, 
+            produits.categorie_id, 
+            categories.libelle_categorie,
+            produits.statut_promotion, 
+            produits.image 
+        FROM produits 
+        LEFT JOIN categories ON produits.categorie_id = categories.id
+    '''
+    
+    # Si categorie_id est fourni, ajoutez une condition à la requête
+    if categorie_id:
+        query += ' WHERE produits.categorie_id = %s'
+        cursor.execute(query, (categorie_id,))
+    else:
+        cursor.execute(query)
+    
     produits = cursor.fetchall()
     cursor.close()
 
@@ -137,8 +163,31 @@ def get_produits():
             'prix': produit[3],
             'image_url': produit[4],
             'categorie_id': produit[5],
-            'statut_promotion': produit[6],
-            'image': produit[7]
+            'categorie_libelle': produit[6],
+            'statut_promotion': produit[7],
+            'image': produit[8]
+        }
+        response.append(item)
+
+    return jsonify(response)
+
+
+
+
+@app.route('/categorie', methods=['GET'])
+@cross_origin(origins=['http://localhost:3000'])
+def get_categories():
+    cursor = db_connection.cursor()
+    cursor.execute('SELECT * FROM categories;')
+    categories = cursor.fetchall()
+    cursor.close()
+
+    response = []
+
+    for category in categories:
+        item = {
+            'id': category[0],
+            'libelle_categories': category[1],
         }
         response.append(item)
 

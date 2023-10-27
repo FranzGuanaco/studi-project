@@ -16,6 +16,16 @@ const Admin = () => {
     const [products, setProducts] = useState([]);
     const [image, setImage] = useState(null);
 
+    function resolveImageUrl(imageUrl) {
+      // Si l'URL commence par "/Users" (ou tout autre chemin local), alors on la considère comme locale
+      if (imageUrl.startsWith('/Users')) {
+          return `http://localhost:3001/images/${imageUrl.split('/').pop()}`;
+      }
+      // Sinon, on retourne l'URL telle quelle
+      return imageUrl;
+  }
+  
+
     // 3. Appel API pour récupérer les produits au chargement du composant
     useEffect(() => {
         axios.get("http://localhost:3001/produits")
@@ -42,14 +52,17 @@ const Admin = () => {
       formData.append('libelle', nom);
       formData.append('description', description);
       formData.append('prix', prix);
-      formData.append('categorie_id', '1');
+      formData.append('categorie_id', categorie);
       formData.append('statut_promotion', 'true');
   
       axios.post('http://localhost:3001/addProductWithImage', formData)
           .then(response => {
               setProducts(prevProducts => [...prevProducts, response.data]);
               console.log("Produit ajouté avec succès !", response.data);
-          })
+          
+          // Recharger la page
+        window.location.reload();
+    })
           .catch(error => {
               console.error("Erreur lors de l'ajout du produit:", error);
           });
@@ -78,9 +91,9 @@ const Admin = () => {
                       value={categorie} 
                       onChange={event => handleInputChange(event, setCategorie)}
                       options={[
-                          { value: "1", label: "Chaussure" },
-                          { value: "2", label: "Marteau" },
-                          { value: "3", label: "Robe" }
+                          { value: "1", label: "Pantalon"},
+                          { value: "2", label: "Chaussure" },
+                          { value: "3", label: "Manteau" }
                       ]}/>
               </div>
   
@@ -93,18 +106,15 @@ const Admin = () => {
           <div className='recent' style={{display: 'flex', justifyContent: 'center'}}>
           
           {products.map(product => (
-            <div key={product.id}>
-            <h4>{product.image_url}</h4>
               <ProductBox 
                 key={product.id} 
-                imageUrl={`http://localhost:3001/images/${product.image_url.split('/').pop()}`} 
+                imageUrl={resolveImageUrl(product.image_url)} 
                 productName={product.libelle} 
                 shortDescription={product.description}
                 display={true} 
                 width='200px'
                 height='200px'
                 />
-                </div>
             ))}    
           </div>
           </div>
