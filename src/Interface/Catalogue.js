@@ -3,6 +3,7 @@ import axios from 'axios';
 import Navbar from '../Component/Navbar/navbar';
 import CategoryBox from '../Component/Categorie/Category';
 import ProductBox from '../Component/Product/ProductBox';
+import { useNavigate } from 'react-router-dom';
 
 const Catalogue = () => {
 
@@ -14,6 +15,14 @@ const Catalogue = () => {
         // Sinon, on retourne l'URL telle quelle
         return imageUrl;
     }
+
+    const navigate = useNavigate();
+
+    function Exportdata(productdata) {
+      // Faites quelque chose lorsque le composant est cliqué.
+      navigate('/Admin/Promotion', { state: { productdata } });
+  }
+  
 
     const [products, setProducts] = useState([]);
     const [categorie, SetCategorie] = useState([]); // Assurez-vous que vous utilisez cette variable ailleurs sinon c'est inutile
@@ -48,15 +57,17 @@ const Catalogue = () => {
                 style={{ width: "44px" }} 
                 categorieName={categoryName} 
                 />
-              <div className="MenuStyle" style={{ paddingTop: "2%", width: "44%", marginLeft:"5%" }}>
-                {products.filter(product => product.categorie_libelle === categoryName).map(filteredProduct => (
-                    <ProductBox 
-                        key={filteredProduct.id}
-                        imageUrl={resolveImageUrl(filteredProduct.image_url)}
-                        productName={filteredProduct.libelle} 
-                        shortDescription={filteredProduct.description}
-                        display={true} 
+              <div className="MenuStyle" style={{ paddingTop: "5%", width: "100%", marginLeft:"5%", display: "flex" }}>
+              {products.filter(product => product.categorie_libelle === categoryName).map(filteredProduct => (
+                 <div onClick={() => Exportdata(filteredProduct)} style={{ flex: "0 0 calc(44% - 12px)", marginRight: "5%", marginBottom: "12px" }}>
+                <ProductBox 
+                    key={filteredProduct.id}
+                    imageUrl={resolveImageUrl(filteredProduct.image_url)}
+                    productName={filteredProduct.libelle} 
+                    shortDescription={filteredProduct.description}
+                    display={true} 
                         />
+                     </div>
                         ))}
                   </div>
              </React.Fragment>

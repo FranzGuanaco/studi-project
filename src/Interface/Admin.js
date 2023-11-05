@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from '../Component/Navbar/navbar';
 import ProductBox from '../Component/Product/ProductBox';
+import ProductRecent from '../Component/Product/ProductRecent';
 import Button from '../Component/Button';
 import TextInput from '../Component/Input/Textinput';
 import { DropdownInput } from '../Component/Input/Dropdown';
 import { NumberInputWithSymbol } from '../Component/Input/Numberinput';
+import '../App.css'
 
 const Admin = () => {
     // 2. States pour gérer les champs d'entrée et les produits
@@ -84,7 +86,9 @@ const Admin = () => {
               <div className="Boxcontent" style={{ width: "100%", marginTop: '50px' }}>
                   <TextInput label="Nom:" id="nom" value={nom} onChange={e => setNom(e.target.value)} />
                   <TextInput label="Description:" id="description" value={description} onChange={e => setDescription(e.target.value)} />
+                  <div className="NumberInputWithSymbol" style={{ marginTop: '20px' }}>
                   <NumberInputWithSymbol label="Prix:" id="prix" value={prix} onChange={e => setPrix(e.target.value)} symbol="€" />
+                  </div>
                   <DropdownInput
                       label="Catégorie:" 
                       id="categorie" 
@@ -97,26 +101,27 @@ const Admin = () => {
                       ]}/>
               </div>
   
-          <div className="Button" style={{ marginTop: "130px" }}>
+          <div className="Button">
           <Button onClick={handleAddProduct}>Ajouter produit</Button>
           </div>
             </div>
-          <div className="Boxcontent" style={{marginLeft: "77%", marginTop:'3%' , width:"15%", position:"relative"}}>
+          <div className="Boxcontent" style={{marginLeft: "77%", marginTop:'3%' , width:"15%", position:"fixed"}}>
           <h4>Produit récemment ajouté</h4>
-          <div className='recent' style={{display: 'flex', justifyContent: 'center'}}>
-          
-          {products.map(product => (
-              <ProductBox 
-                key={product.id} 
-                imageUrl={resolveImageUrl(product.image_url)} 
-                productName={product.libelle} 
-                shortDescription={product.description}
-                display={true} 
-                width='200px'
-                height='200px'
-                />
-            ))}    
+          <div className='recent' style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+  {products.map((product, index) => (
+          <div key={product.id} style={{ marginBottom: index !== products.length - 1 ? '12px' : '0' }}>
+         <ProductRecent 
+            imageUrl={resolveImageUrl(product.image_url)} 
+            productName={product.libelle} 
+            shortDescription={product.description}
+            display={true} 
+            width='200px'
+            height='200px'
+            />
+           </div>
+           ))}
           </div>
+
           </div>
         </div>
       );

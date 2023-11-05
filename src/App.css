@@ -40,9 +40,7 @@
 .Boxcontent {
   width: 100px; /* Largeur du carré */
   height: 100px; /* Hauteur du carré */
-
 }
-
 
 
 form {
@@ -114,7 +112,6 @@ form {
 .randombox-container {
   display: flex;
   align-items: center;
- 
 }
 
 .button-container {
@@ -122,14 +119,12 @@ form {
   align-items: center;
   margin-left: 25%;
   margin-top: 4%;
- 
 }
 
 .randombox-pie {
   display: flex;
   align-items: center;
   margin-left: 250px;
- 
 }
 
 
@@ -158,4 +153,26 @@ form {
 .label-fixed-width {
   display: inline-block;
   width: 120px; /* Vous pouvez ajuster cette valeur en fonction de la taille du label le plus long */
+}
+
+.Button{
+  margin-top: 10vh;
+
+}
+
+@media (max-width: 800px) {
+  .Button {
+    margin-top: 40vh;
+  }
+}
+
+.ButtonPromo{
+  margin-top: 1vh;
+
+}
+
+@media (max-width: 800px) {
+  .ButtonPromo {
+    margin-top: 3vh;
+  }
 }

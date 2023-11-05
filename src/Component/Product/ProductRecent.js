@@ -1,14 +1,14 @@
 import React from 'react';
-import './ProductBox.css'; // Importez le fichier CSS
+import './ProductBoxRecent.css'; // Importez le fichier CSS
 
-const ProductBox = ({ imageUrl, productName, shortDescription, display}) => {
+const ProductRecent = ({ imageUrl, productName, shortDescription, display}) => {
   return (
     <div>
-      <div className="square">
+      <div className="squareRecent">
         <img src={imageUrl} alt="Votre image" className="square-image" />
       </div>
       {display && (
-      <div className="DescriptionStyle">
+      <div className="DescriptionStyleRecent">
         <p>{productName} {shortDescription}</p>
       </div>
        )}
@@ -16,15 +16,10 @@ const ProductBox = ({ imageUrl, productName, shortDescription, display}) => {
   );
 }
 
-ProductBox.defaultProps = {
+ProductRecent.defaultProps = {
   productName: "Nom:",
   shortDescription: "Courte description par défaut",
   display: true
 };
 
-export default ProductBox;
-
-
-
-
-
+export default ProductRecent;

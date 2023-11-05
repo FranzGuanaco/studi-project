@@ -1,0 +1,88 @@
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import Navbar from '../Component/Navbar/navbar'; // Assurez-vous que le chemin est correct
+import ProductBox from '../Component/Product/ProductBox'; // Assurez-vous que le chemin est correct
+import { NumberInputWithSymbol } from '../Component/Input/Numberinput'; // Assurez-vous que le chemin est correct
+import Button from '../Component/Button';
+
+
+const Promotion = () => {
+    const location = useLocation();
+    const [productData, setProductData] = useState(location.state?.productdata);
+    const [originalPrice, setOriginalPrice] = useState(productData?.prix); // Stockez le prix original
+    const [discount, setDiscount] = useState('');
+
+    useEffect(() => {
+        // Si productData change, mettez à jour le prix original
+        setOriginalPrice(productData?.prix);
+    }, [productData]);
+
+    function resolveImageUrl(imageUrl) {
+        if (imageUrl.startsWith('/Users')) {
+            return `http://localhost:3001/images/${imageUrl.split('/').pop()}`;
+        }
+        return imageUrl;
+    }
+
+    const handleDiscountChange = (event) => {
+        setDiscount(event.target.value);
+    };
+
+    const applyDiscount = () => {
+        // Si la réduction est vide, rétablissez le prix original
+        if (!discount && originalPrice) {
+            setProductData({ ...productData, prix: originalPrice });
+            return;
+        }
+
+        // Appliquez la réduction
+        const discountedPrice = originalPrice - (originalPrice * discount / 100);
+        setProductData({ ...productData, prix: discountedPrice.toFixed(2) });
+    };
+
+    const Reload = () => {
+        window.location.reload();
+    }
+
+
+    return (
+        <div className="App" style={{ display: 'flex', flexDirection: 'column' }}>
+            <div className="NavStyle">
+                <Navbar />
+            </div>
+            {productData && (
+                <div className="Boxcontent" style={{ marginLeft: "40%", marginTop: '5%', width: "35%", position: "fixed" }}>
+                    <div className="MenuStyle" style={{ paddingTop: "20%", width: "44%" }}>
+                        <ProductBox 
+                            key={productData.id}
+                            imageUrl={resolveImageUrl(productData.image_url)}
+                            productName={productData.libelle}
+                            shortDescription={productData.description}
+                            display={true}
+                        />
+                        <h4>Prix: {originalPrice}€</h4>
+       
+                    </div>
+                
+                    <div className="NumberInputWithSymbol" style={{ marginTop: '1%', width: "35%", position: "fixed" }}>
+                        <NumberInputWithSymbol 
+                            label="Réduction (%)"
+                            id="discount"
+                            value={discount}
+                            symbol="%"
+                            onChange={handleDiscountChange}
+                        />
+                       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', paddingTop:"10%" }}>
+                        <Button onClick={applyDiscount} color='black' text='Réduction'>Appliquer Réduction</Button>
+                         <Button onClick={Reload} color='gray' text='Retour au prix original'>Reload</Button>
+                        </div>
+                        </div>
+                        </div>
+                        )}
+        </div>
+    );
+};
+
+export default Promotion;
+
+

@@ -65,9 +65,9 @@ class AuthPage extends React.Component {
         <h2>{userName}</h2>
      
         <form className="formBox" onSubmit={this.handleSubmit}>
-          <label htmlFor="username">{this.props.title} :</label>
+          <label htmlFor="username" style={{margin:'auto'}}>{this.props.title} :</label>
           <input type="text" id="username" name="username" value={userName} onChange={this.handleUsernameChange} placeholder="" />
-          <label htmlFor="password">{this.props.title2}</label>
+          <label htmlFor="password" style={{margin:'auto'}}>{this.props.title2}</label>
           <input type="password" id="password" name="password" value={password} onChange={this.handlePasswordChange}/>
           <input type="submit" value="Se connecter"/>
         </form>

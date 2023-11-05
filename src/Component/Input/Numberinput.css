@@ -1,0 +1,34 @@
+.flex-container {
+    display: flex;
+    flex-direction: 'row';
+    align-items: 'center';
+    justify-content: 'flex-start';
+  }
+  
+  .input-container {
+    position: relative;
+    width: 44%; /* Ajustez la largeur selon les besoins */
+  }
+  
+  .number-input {
+    width: 100%;
+    padding-right: 20px; /* Ajustez ceci en fonction de la taille de votre symbole */
+  }
+  
+  .input-symbol {
+    position: absolute;
+    right: 5px; /* Ajustez ceci pour positionner le symbole à l'intérieur de l'input */
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none; /* Permet de cliquer sur l'input même sur le symbole */
+  }
+  
+  
+  /* Media query for screens less than 800px wide */
+  @media (max-width: 800px) {
+    .flex-container {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+  
