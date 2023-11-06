@@ -7,8 +7,8 @@ import Button from '../Button';
 
 
 function Navbar(props) {
-    const showSearchbar = props.showSearchbar; 
-    const showWelcomeText = props.showWelcomeText; 
+    const { showSearchbar, showWelcomeText, buttonColor, text, handleClick } = props;
+
 
     return (
         <nav className="navbar" >
@@ -23,16 +23,9 @@ function Navbar(props) {
             
          <ul className="navbar-list">
         <li className="navbar-item">
-         <Link to="/result">
-         <Button color={props.buttonColor}/>
-         </Link>
-        </li>
-        <li className="navbar-item" >
-         <Link to="/result">
-         <div className="image-container">
-         <img src={props.categoryIcon} alt="Résultat" style={{ width: '30px' }} />
-         </div>
-         </Link>
+        
+        <Button color={buttonColor} text={text} onClick={handleClick} />
+         
         </li>
         </ul>
         
@@ -45,7 +38,8 @@ Navbar.defaultProps = {
     categoryIcon: categorie_icon,
     showSearchbar: true,
     showWelcomeText: false,
-    buttonColor:'#9a9a9a'
+    buttonColor:'#9a9a9a',
+    text: 'Espace admin'
    
   }
 

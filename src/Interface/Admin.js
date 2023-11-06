@@ -7,6 +7,7 @@ import Button from '../Component/Button';
 import TextInput from '../Component/Input/Textinput';
 import { DropdownInput } from '../Component/Input/Dropdown';
 import { NumberInputWithSymbol } from '../Component/Input/Numberinput';
+import { useNavigate } from 'react-router-dom';
 import '../App.css'
 
 const Admin = () => {
@@ -70,11 +71,19 @@ const Admin = () => {
           });
   };
 
+  const navigate = useNavigate();
+
+  const goToCatalogue = () => {
+    navigate('/Catalogue')
+    console.log('test')
+};
+
+
     // 7. Rendu du composant
     return (
       <div>
           <div className="NavStyle">
-              <Navbar showSearchbar={false} showWelcomeText={true}/>
+              <Navbar showSearchbar={false} showWelcomeText={true} buttonColor="green" text="Catalogue" handleClick={goToCatalogue}/>
           </div>
           <div className="Boxcontent" style={{ marginLeft: "25%", marginTop: '5%', width: "35%", position: "fixed" }}>
               <h3>Ajoutez un nouveau produit</h3>
@@ -102,7 +111,7 @@ const Admin = () => {
               </div>
   
           <div className="Button">
-          <Button onClick={handleAddProduct}>Ajouter produit</Button>
+          <Button onClick={handleAddProduct} >Ajouter produit</Button>
           </div>
             </div>
           <div className="Boxcontent" style={{marginLeft: "77%", marginTop:'3%' , width:"15%", position:"fixed"}}>

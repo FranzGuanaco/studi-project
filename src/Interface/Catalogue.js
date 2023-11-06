@@ -22,7 +22,6 @@ const Catalogue = () => {
       // Faites quelque chose lorsque le composant est cliqué.
       navigate('/Admin/Promotion', { state: { productdata } });
   }
-  
 
     const [products, setProducts] = useState([]);
     const [categorie, SetCategorie] = useState([]); // Assurez-vous que vous utilisez cette variable ailleurs sinon c'est inutile
@@ -44,10 +43,16 @@ const Catalogue = () => {
 
     const uniqueCategories = [...new Set(products.map(product => product.categorie_libelle))];
 
+
+    const goToAdmin = () => {
+      navigate('/Admin')
+      console.log('test')
+  };
+
     return (
         <div className="App" style={{ display: 'flex', flexDirection: 'column' }}>
             <div className="NavStyle">
-                <Navbar />
+                <Navbar handleClick={goToAdmin}/>
             </div>
             <div className="MenuStyle" style={{ paddingTop: "2%", width: "44%" }}>
             {

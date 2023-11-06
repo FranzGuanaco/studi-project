@@ -48,8 +48,8 @@ def add_product_with_image():
     cursor = db_connection.cursor()
 
     try:
-        cursor.execute("INSERT INTO produits (libelle, description, prix, image_url, categorie_id) VALUES (%s, %s, %s, %s, %s) RETURNING id;", 
-                       (libelle, description, prix, file_path, categorie_id))
+        cursor.execute("INSERT INTO produits (libelle, description, prix, prix_original, image_url, categorie_id) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id;", 
+                       (libelle, description, prix, prix, file_path, categorie_id))
 
         product_id = cursor.fetchone()[0]
         db_connection.commit()
@@ -133,7 +133,8 @@ def get_produits():
             produits.id, 
             produits.libelle, 
             produits.description, 
-            produits.prix, 
+            produits.prix,
+            produits.prix_original, 
             produits.image_url, 
             produits.categorie_id, 
             categories.libelle_categorie,
@@ -161,11 +162,12 @@ def get_produits():
             'libelle': produit[1], 
             'description': produit[2],
             'prix': produit[3],
-            'image_url': produit[4],
-            'categorie_id': produit[5],
-            'categorie_libelle': produit[6],
-            'statut_promotion': produit[7],
-            'image': produit[8]
+            'prix_original': produit[4],
+            'image_url': produit[5],
+            'categorie_id': produit[6],
+            'categorie_libelle': produit[7],
+            'statut_promotion': produit[8],
+            'image': produit[9]
         }
         response.append(item)
 
@@ -192,6 +194,49 @@ def get_categories():
         response.append(item)
 
     return jsonify(response)
+
+
+@app.route('/update-product-price', methods=['POST'])
+def update_product_price():
+    try:
+        data = request.get_json()
+        product_id = data['product_id']
+        new_price = data['new_price']
+
+        cursor = db_connection.cursor()
+        cursor.execute("UPDATE produits SET prix = %s WHERE id = %s", (new_price, product_id))
+        db_connection.commit()
+        cursor.close()
+
+        return jsonify({'message': 'Prix mis à jour avec succès'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+from flask import Flask, jsonify, request
+
+# ... (autres importations et configurations)
+
+@app.route('/reset-product-price', methods=['POST'])
+def reset_product_price():
+    try:
+        data = request.get_json()
+        product_id = data['product_id']
+
+        cursor = db_connection.cursor()
+
+        # Récupérez la valeur de prix_original pour le produit donné
+        cursor.execute("SELECT prix_original FROM produits WHERE id = %s", (product_id,))
+        prix_original = cursor.fetchone()[0]
+
+        # Mettez à jour la colonne "prix" avec la valeur de "prix_original"
+        cursor.execute("UPDATE produits SET prix = %s WHERE id = %s", (prix_original, product_id))
+        db_connection.commit()
+        cursor.close()
+
+        return jsonify({'message': 'Prix réinitialisé avec succès'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 

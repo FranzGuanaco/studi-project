@@ -1,30 +1,34 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 import "./Button.css"
 
 function Button(props) {
+    const { text, color, fontSize, fontWeight, onClick } = props;
 
-    const boutonStyle = {
-        backgroundColor: props.color,
-        fontSize: '13px', // Taille de police de 12px
-        fontWeight: 'bold', // Texte en gras
-      };
     return (
         <div>
-            <button onClick={props.onClick} style={boutonStyle} className="edit-btn">
-                {props.text}
+            <button onClick={onClick} style={{ backgroundColor: color, fontSize, fontWeight }} className="edit-btn">
+                {text}
             </button>
         </div>
     );
 }
 
 Button.propTypes = {
-    onClick: PropTypes.func.isRequired
+    text: PropTypes.string,
+    navigateTo: PropTypes.string.isRequired,
+    color: PropTypes.string,
+    fontSize: PropTypes.string,
+    fontWeight: PropTypes.string
 };
 
 Button.defaultProps = {
-    color: '#9a9a9a',
-    text: 'Espace admin'
+    text: 'Espace admin',
+    color: '#9a9a9a', // Default color grey
+    fontSize: '13px', // Default font size
+    fontWeight: 'bold' // Default font weight
 };
 
 export default Button;
+

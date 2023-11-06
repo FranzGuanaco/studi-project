@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import Navbar from '../Component/Navbar/navbar'; // Assurez-vous que le chemin est correct
 import ProductBox from '../Component/Product/ProductBox'; // Assurez-vous que le chemin est correct
@@ -17,6 +18,7 @@ const Promotion = () => {
         setOriginalPrice(productData?.prix);
     }, [productData]);
 
+
     function resolveImageUrl(imageUrl) {
         if (imageUrl.startsWith('/Users')) {
             return `http://localhost:3001/images/${imageUrl.split('/').pop()}`;
@@ -33,16 +35,46 @@ const Promotion = () => {
         if (!discount && originalPrice) {
             setProductData({ ...productData, prix: originalPrice });
             return;
+            
         }
 
         // Appliquez la réduction
         const discountedPrice = originalPrice - (originalPrice * discount / 100);
         setProductData({ ...productData, prix: discountedPrice.toFixed(2) });
+
+        // Envoyez la requête POST à l'API Flask pour mettre à jour la base de données
+    axios
+        .post('http://localhost:3001/update-product-price', {
+            product_id: productData.id,
+            new_price: discountedPrice,
+        })
+        .then(response => {
+            console.log(response.data.message); // Affichez le message de succès ou d'erreur de l'API
+        })
+        .catch(error => {
+            console.error('Erreur lors de la mise à jour de la base de données :', error);
+        });
     };
 
+
     const Reload = () => {
-        window.location.reload();
-    }
+        // Réinitialisez le prix avec la valeur originale
+        setProductData({ ...productData, prix: originalPrice });
+
+        // Envoyez la requête POST à l'API Flask pour mettre à jour la base de données avec le prix original
+        axios
+            .post('http://localhost:3001/reset-product-price', {
+                product_id: productData.id,
+            })
+            .then(response => {
+                console.log(response.data.message);
+                // Rechargez la page après avoir réinitialisé le prix
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Erreur lors de la réinitialisation du prix :', error);
+            });
+    };
 
 
     return (
@@ -73,8 +105,8 @@ const Promotion = () => {
                             onChange={handleDiscountChange}
                         />
                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', paddingTop:"10%" }}>
-                        <Button onClick={applyDiscount} color='black' text='Réduction'>Appliquer Réduction</Button>
-                         <Button onClick={Reload} color='gray' text='Retour au prix original'>Reload</Button>
+                        <Button onClick={applyDiscount} color='black' text='Réduction'></Button>
+                         <Button onClick={Reload} color='gray' text='Retour au prix original'></Button>
                         </div>
                         </div>
                         </div>
