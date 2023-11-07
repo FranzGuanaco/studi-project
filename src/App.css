@@ -152,17 +152,17 @@ form {
 
 .label-fixed-width {
   display: inline-block;
-  width: 120px; /* Vous pouvez ajuster cette valeur en fonction de la taille du label le plus long */
+  width: 165px; /* Vous pouvez ajuster cette valeur en fonction de la taille du label le plus long */
 }
 
 .Button{
-  margin-top: 10vh;
+  margin-top: 23vh;
 
 }
 
-@media (max-width: 800px) {
+@media (max-width: 830px) {
   .Button {
-    margin-top: 40vh;
+    margin-top: 35vh;
   }
 }
 

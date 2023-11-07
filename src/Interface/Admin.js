@@ -9,12 +9,15 @@ import { DropdownInput } from '../Component/Input/Dropdown';
 import { NumberInputWithSymbol } from '../Component/Input/Numberinput';
 import { useNavigate } from 'react-router-dom';
 import '../App.css'
+import { Inputdate } from '../Component/Input/Inputdate';
 
 const Admin = () => {
     // 2. States pour gérer les champs d'entrée et les produits
     const [nom, setNom] = useState('');
     const [description, setDescription] = useState('');
     const [prix, setPrix] = useState('');
+    const [date_debut_promotion, setDebut] = useState('');
+    const [date_fin_promotion, setFin] = useState('');
     const [categorie, setCategorie] = useState(1);
     const [products, setProducts] = useState([]);
     const [image, setImage] = useState(null);
@@ -55,6 +58,8 @@ const Admin = () => {
       formData.append('libelle', nom);
       formData.append('description', description);
       formData.append('prix', prix);
+      formData.append('date_debut_promotion', date_debut_promotion);
+      formData.append('date_fin_promotion', date_fin_promotion);
       formData.append('categorie_id', categorie);
       formData.append('statut_promotion', 'true');
   
@@ -98,6 +103,7 @@ const Admin = () => {
                   <div className="NumberInputWithSymbol" style={{ marginTop: '20px' }}>
                   <NumberInputWithSymbol label="Prix:" id="prix" value={prix} onChange={e => setPrix(e.target.value)} symbol="€" />
                   </div>
+                  <div className="NumberInputWithSymbol" style={{ marginTop: '20px' }}>
                   <DropdownInput
                       label="Catégorie:" 
                       id="categorie" 
@@ -108,10 +114,17 @@ const Admin = () => {
                           { value: "2", label: "Chaussure" },
                           { value: "3", label: "Manteau" }
                       ]}/>
+                      </div>
+                     <div className="InputdateStyle" style={{ marginTop: '20px' }}>
+                    <Inputdate label={'Date de début'} id="début" value={date_debut_promotion} onChange={e => setDebut(e.target.value)}/>
+                    </div>
+                    <div className="InputdateStyle" style={{ marginTop: '20px' }}>
+                    <Inputdate label={'Date de fin'} id="fin" value={date_fin_promotion} onChange={e => setFin(e.target.value)}/>
+                    </div>
               </div>
   
           <div className="Button">
-          <Button onClick={handleAddProduct} >Ajouter produit</Button>
+          <Button onClick={handleAddProduct} color="black" text="Creer produit">Ajouter produit</Button>
           </div>
             </div>
           <div className="Boxcontent" style={{marginLeft: "77%", marginTop:'3%' , width:"15%", position:"fixed"}}>

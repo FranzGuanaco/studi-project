@@ -58,8 +58,6 @@ const Promotion = () => {
 
 
     const Reload = () => {
-        // Réinitialisez le prix avec la valeur originale
-        setProductData({ ...productData, prix: originalPrice });
 
         // Envoyez la requête POST à l'API Flask pour mettre à jour la base de données avec le prix original
         axios
@@ -68,8 +66,11 @@ const Promotion = () => {
             })
             .then(response => {
                 console.log(response.data.message);
+                console.log("reussi");
                 // Rechargez la page après avoir réinitialisé le prix
-                window.location.reload();
+                setOriginalPrice(response.data.prix_original);
+             
+                
             })
             .catch(error => {
                 console.error('Erreur lors de la réinitialisation du prix :', error);

@@ -43,13 +43,15 @@ def add_product_with_image():
     libelle = request.form['libelle']
     description = request.form['description']
     prix = request.form['prix']
+    date_debut_promotion = request.form['date_debut_promotion']
+    date_fin_promotion = request.form['date_fin_promotion']
     categorie_id = request.form['categorie_id']
 
     cursor = db_connection.cursor()
 
     try:
-        cursor.execute("INSERT INTO produits (libelle, description, prix, prix_original, image_url, categorie_id) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id;", 
-                       (libelle, description, prix, prix, file_path, categorie_id))
+        cursor.execute("INSERT INTO produits (libelle, description, prix, prix_original, date_debut_promotion, date_fin_promotion, image_url, categorie_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;", 
+                       (libelle, description, prix, prix, date_debut_promotion, date_fin_promotion, file_path, categorie_id))
 
         product_id = cursor.fetchone()[0]
         db_connection.commit()
@@ -135,6 +137,8 @@ def get_produits():
             produits.description, 
             produits.prix,
             produits.prix_original, 
+            produits.date_debut_promotion,
+            produits.date_fin_promotion,
             produits.image_url, 
             produits.categorie_id, 
             categories.libelle_categorie,
@@ -163,11 +167,13 @@ def get_produits():
             'description': produit[2],
             'prix': produit[3],
             'prix_original': produit[4],
-            'image_url': produit[5],
-            'categorie_id': produit[6],
-            'categorie_libelle': produit[7],
-            'statut_promotion': produit[8],
-            'image': produit[9]
+            'date_debut_promotion': produit[5],
+            'date_fin_promotion': produit[6],
+            'image_url': produit[7],
+            'categorie_id': produit[8],
+            'categorie_libelle': produit[9],
+            'statut_promotion': produit[10],
+            'image': produit[11]
         }
         response.append(item)
 
@@ -232,9 +238,14 @@ def reset_product_price():
         # Mettez à jour la colonne "prix" avec la valeur de "prix_original"
         cursor.execute("UPDATE produits SET prix = %s WHERE id = %s", (prix_original, product_id))
         db_connection.commit()
+
+        # Sélectionnez à nouveau le produit pour obtenir le prix original mis à jour
+        cursor.execute("SELECT prix_original FROM produits WHERE id = %s", (product_id,))
+        prix_original_mis_a_jour = cursor.fetchone()[0]
+
         cursor.close()
 
-        return jsonify({'message': 'Prix réinitialisé avec succès'}), 200
+        return jsonify({'message': 'Prix réinitialisé avec succès', 'prix_original': prix_original_mis_a_jour}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
