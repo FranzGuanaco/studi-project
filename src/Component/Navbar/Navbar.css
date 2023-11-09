@@ -17,6 +17,7 @@
   
   .navbar-item {
     margin-left: 65px;
+    position: static;
   }
   
   .navbar-center {
@@ -39,9 +40,9 @@
   
   /* ... Autres règles CSS ... */
 
-  @media (max-width: 560px) {
+  @media (max-width: 890px) {
     .navbar {
-      width: 605px;
+      width: 885px;
     }
   }
 

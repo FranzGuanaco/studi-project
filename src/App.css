@@ -176,3 +176,23 @@ form {
     margin-top: 3vh;
   }
 }
+
+.dropdown-content {
+  background-color: #f9f9f9;
+  min-width: 50px;
+  max-width: 100px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  padding: 12px 16px;
+  z-index: 1;
+}
+
+.dropdown-option {
+  margin: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s; /* Ajoute une transition pour une animation douce */
+}
+
+.dropdown-option:hover {
+  background-color: #ccc; /* Couleur grise au survol */
+}
+

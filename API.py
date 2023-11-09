@@ -181,6 +181,63 @@ def get_produits():
 
 
 
+@app.route('/pantalon', methods=['GET'])
+@cross_origin(origins=['http://localhost:3000'])
+def get_pantalon_produits():
+    cursor = db_connection.cursor()
+    categorie_id = request.args.get('categorie_id')
+
+    # Build the base query
+    query = '''
+    SELECT 
+        produits.id, 
+        produits.libelle, 
+        produits.description, 
+        produits.prix,
+        produits.prix_original, 
+        produits.date_debut_promotion,
+        produits.date_fin_promotion,
+        produits.image_url, 
+        produits.categorie_id, 
+        categories.libelle_categorie,
+        produits.statut_promotion, 
+        produits.image 
+    FROM produits 
+    LEFT JOIN categories ON produits.categorie_id = categories.id
+    '''
+
+    # If categorie_id is provided, add a condition to the query
+    if categorie_id:
+        query += " WHERE categories.libelle_categorie = %s"
+        cursor.execute(query, (categorie_id,))
+    else:
+        cursor.execute(query)
+    
+    produits = cursor.fetchall()
+    cursor.close()
+
+    response = []
+
+    for produit in produits:
+        item = {
+            'id': produit[0],
+            'libelle': produit[1], 
+            'description': produit[2],
+            'prix': produit[3],
+            'prix_original': produit[4],
+            'date_debut_promotion': produit[5],
+            'date_fin_promotion': produit[6],
+            'image_url': produit[7],
+            'categorie_id': produit[8],
+            'categorie_libelle': produit[9],
+            'statut_promotion': produit[10],
+            'image': produit[11]
+        }
+        response.append(item)
+
+    return jsonify(response)
+
+
 
 @app.route('/categorie', methods=['GET'])
 @cross_origin(origins=['http://localhost:3000'])
@@ -221,7 +278,7 @@ def update_product_price():
 
 from flask import Flask, jsonify, request
 
-# ... (autres importations et configurations)
+
 
 @app.route('/reset-product-price', methods=['POST'])
 def reset_product_price():
