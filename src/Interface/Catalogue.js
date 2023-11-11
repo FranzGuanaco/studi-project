@@ -5,105 +5,116 @@ import CategoryBox from '../Component/Categorie/Category';
 import ProductBox from '../Component/Product/ProductBox';
 import { useNavigate } from 'react-router-dom';
 
-function resolveImageUrl(imageUrl) {
-
-    
-    if (imageUrl.startsWith('/Users')) {
-        return `http://localhost:3001/images/${imageUrl.split('/').pop()}`;
-    }
-    return imageUrl;
-}
-
 const Catalogue = () => {
-    const navigate = useNavigate();
-    const [products, setProducts] = useState([]);
-    const [categories, setCategories] = useState([]);
-    const [filteredCategories, setFilteredCategories] = useState(null);
-    const [uniqueCategories, setUniqueCategories] = useState([]);
 
+    function resolveImageUrl(imageUrl) {
+        // Si l'URL commence par "/Users" (ou tout autre chemin local), alors on la considère comme locale
+        if (imageUrl.startsWith('/Users')) {
+            return `http://localhost:3001/images/${imageUrl.split('/').pop()}`;
+        }
+        // Sinon, on retourne l'URL telle quelle
+        return imageUrl;
+    }
+
+  
+        const navigate = useNavigate();
+        const [filteredCategories, setFilteredCategories] = useState(null);
+        const [products, setProducts] = useState([]);
+        const [categorie, SetCategorie] = useState([]);
+      
+        
+
+    function Exportdata(productdata) {
+      // Faites quelque chose lorsque le composant est cliqué.
+      navigate('/Admin/Promotion', { state: { productdata } });
+  }
+
+  useEffect(() => {
+    if (filteredCategories != null) {
+        console.log(`voici ${filteredCategories}`);
+
+        axios.get(`http://localhost:3001/pantalon`, {
+            params: {
+                categorie_id: `${filteredCategories}`
+            }
+        })
+        .then(response => {
+            setProducts(response.data);
+            console.log('Pantalon products fetched');
+        })
+        .catch(error => console.error('Error fetching pantalon products:', error));
+    } else {
+        axios.get('http://localhost:3001/produits')
+        .then(response => {
+            setProducts(response.data);
+            console.log('All products fetched');
+        })
+        .catch(error => console.error('Error fetching products:', error));
+    }
+}, [filteredCategories]);
 
     useEffect(() => {
-        if (filteredCategories != null) {
-            console.log(`voici ${filteredCategories}`);
+        axios.get("http://localhost:3001/categorie")
+            .then(response => {
+                SetCategorie(response.data);
+                console.log(response.data);
+            })
+            .catch(error => console.error("Erreur lors de la récupération des categories:", error));
+    }, []);
 
-            axios.get(`http://localhost:3001/pantalon`, {
-                params: {
-                    categorie_id: `${filteredCategories}`
-                }
-            })
-            .then(response => {
-                setProducts(response.data);
-                console.log('Pantalon products fetched');
-            })
-            .catch(error => console.error('Error fetching pantalon products:', error));
-        } else {
-            axios.get('http://localhost:3001/produits')
-            .then(response => {
-                setProducts(response.data);
-                console.log('All products fetched');
-            })
-            .catch(error => console.error('Error fetching products:', error));
-        }
-    }, [filteredCategories]);
-    
-      
-    // Handlers for different actions.
-    const handleOptionClick = (option) => {
-        if (option != null) {
-            setFilteredCategories([`${option}`]); // If 'pantalon' is clicked, set filteredCategories to only 'pantalon'
-            console.log(`${option}`);
-        } else {
-            setFilteredCategories([]); // Otherwise, reset to show all categories.
-            console.log(`${option}`);
-        }
-    };
-    
-    const exportData = productData => {
-        navigate('/Admin/Promotion', { state: { productData } });
-    };
+    const uniqueCategories = [...new Set(products.map(product => product.categorie_libelle))];
+
+
+  const handleOptionClick = (option) => {
+    if (option != null) {
+        setFilteredCategories([`${option}`]); // If 'pantalon' is clicked, set filteredCategories to only 'pantalon'
+        console.log(`${option}`);
+    } else {
+        setFilteredCategories([]); // Otherwise, reset to show all categories.
+        console.log(`${option}`);
+    }
+};
 
     const goToAdmin = () => {
-        navigate('/Auth');
-    };
+             navigate('/Admin')
+             console.log('test')
+            };
 
-    // Derived state to get unique categories from products.
-    useEffect(() => {
-    
-            setUniqueCategories([...new Set(products.map(product => product.categorie_libelle))]);
-        
-    }, [products, filteredCategories]);
-
-    // The main render method returns the JSX for the component.
     return (
         <div className="App" style={{ display: 'flex', flexDirection: 'column' }}>
             <div className="NavStyle">
-                <Navbar handleClick={goToAdmin} display={'true'} handleOptionClick={handleOptionClick} />
+            <Navbar handleClick={goToAdmin} display={'true'} handleOptionClick={handleOptionClick} />
             </div>
             <div className="MenuStyle" style={{ paddingTop: "2%", width: "44%" }}>
-                {uniqueCategories.map(categoryName => (
-                    
-                    <React.Fragment key={categoryName}>
-                        <CategoryBox style={{ width: "44px" }} categoryName={categoryName} />
-                        <div className="MenuStyle" style={{ paddingTop: "5%", width: "100%", marginLeft: "5%", display: "flex" }}>
-                            
-                            {products.filter(product => product.categorie_libelle === categoryName).map(filteredProduct => (
-                                <div onClick={() => exportData(filteredProduct)} style={{ flex: "0 0 calc(44% - 12px)", marginRight: "5%", marginBottom: "12px" }}>
-                                    <ProductBox
-                                        key={filteredProduct.id}
-                                        imageUrl={resolveImageUrl(filteredProduct.image_url)}
-                                        productName={filteredProduct.libelle}
-                                        shortDescription={filteredProduct.description}
-                                        display={true}
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                    </React.Fragment>
-                ))}
+            {
+            uniqueCategories.map(categoryName => (
+              <React.Fragment key={categoryName}>
+              <CategoryBox 
+                style={{ width: "44px" }} 
+                categorieName={categoryName} 
+                />
+              <div className="MenuStyle" style={{ paddingTop: "5%", width: "100%", marginLeft:"5%", display: "flex" }}>
+              {products.filter(product => product.categorie_libelle === categoryName).map(filteredProduct => (
+                 <div onClick={() => Exportdata(filteredProduct)} style={{ flex: "0 0 calc(44% - 12px)", marginRight: "5%", marginBottom: "12px" }}>
+                <ProductBox 
+                    key={filteredProduct.id}
+                    imageUrl={resolveImageUrl(filteredProduct.image_url)}
+                    productName={filteredProduct.libelle} 
+                    shortDescription={filteredProduct.description}
+                    display={true} 
+                        />
+                     </div>
+                        ))}
+                  </div>
+             </React.Fragment>
+                         ))
+                          }
             </div>
         </div>
     );
 };
 
 export default Catalogue;
+
+
 

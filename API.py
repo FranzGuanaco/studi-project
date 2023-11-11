@@ -4,24 +4,97 @@ import psycopg2
 import os
 from werkzeug.utils import secure_filename
 from flask import send_from_directory
+from flask_bcrypt import Bcrypt
 
 app = Flask(__name__)
 CORS(app)
+# Initialiser bcrypt
+bcrypt = Bcrypt()
 
-# Configuration de la base de données
-db_connection = psycopg2.connect(
-    host='localhost',
-    port=5432,
-    user='pierrechevin',
-    password='votre_mot_de_passe',
-    database='mercadona'
-)
 
-# Message d'accueil
-print("API Flask en cours d'exécution. Accédez à l'API via http://localhost:3000/")
+try:
+    # Configuration de la base de données
+    db_connection = psycopg2.connect(
+        host='localhost',
+        port=5432,
+        user='pierrechevin',
+        password='votre_mot_de_passe',
+        database='mercadona'
+    )
 
+    cursor = db_connection.cursor()
+
+    # Sélectionner tous les utilisateurs
+    cursor.execute("SELECT id, mot_de_passe FROM utilisateurs;")
+    users = cursor.fetchall()
+
+    # Hacher chaque mot de passe et mettre à jour la base de données
+    for user_id, mot_de_passe in users:
+        hashed_pw = bcrypt.generate_password_hash(mot_de_passe).decode('utf-8')
+        cursor.execute("UPDATE utilisateurs SET mot_de_passe = %s WHERE id = %s;", (hashed_pw, user_id))
+
+    # Valider les changements
+    db_connection.commit()
+
+finally:
+    # Fermer la connexion
+    if db_connection:
+        cursor.close()
+
+
+print("Mise à jour des mots de passe terminée.")
+
+
+mot_de_passe_test = 'Studi'
+mot_de_passe_hash = bcrypt.generate_password_hash(mot_de_passe_test).decode('utf-8')
+
+print("Mot de passe haché pour test:", mot_de_passe_hash)
+print("Correspond au hachage de la base de données:", bcrypt.check_password_hash(mot_de_passe_hash, mot_de_passe_test))
 
 UPLOAD_FOLDER = '/Users/pierrechevin/Studi project/studi-project/src/Pic'
+
+# Route pour récupérer les données de la table "Utilisateurs"
+# Route pour récupérer les données de la table "Utilisateurs"
+@app.route('/login', methods=['POST'])
+@cross_origin(origins='http://localhost:3000')
+def login():
+    data = request.json
+    nom_utilisateur = data['nom_utilisateur']
+    mot_de_passe = data['mot_de_passe']
+
+    # Debug: À retirer après le débogage
+    print("Nom d'utilisateur reçu:", nom_utilisateur)
+    print("Mot de passe reçu:", mot_de_passe)
+
+    try:
+        cursor = db_connection.cursor()
+        cursor.execute('SELECT mot_de_passe FROM utilisateurs WHERE nom_utilisateur = %s;', (nom_utilisateur,))
+        utilisateur = cursor.fetchone()
+        cursor.close()
+
+        if utilisateur:
+            mot_de_passe_hash = utilisateur[0]
+            print("Mot de passe hashé depuis la BD:", mot_de_passe_hash)  # Debug: À retirer après le débogage
+
+            if bcrypt.check_password_hash(mot_de_passe_hash, mot_de_passe):
+                return jsonify({'status': 'success', 'message': 'Authentification réussie!'})
+            else:
+                return jsonify({'status': 'failure', 'message': 'Mot de passe incorrect!'}), 401
+        else:
+            return jsonify({'status': 'failure', 'message': 'Nom d’utilisateur non trouvé!'}), 401
+
+    except Exception as e:
+        print("Erreur lors de la connexion à la base de données:", str(e))
+        return jsonify({'status': 'failure', 'message': 'Erreur interne du serveur'}), 500
+
+   
+
+
+# Route pour l'authentification
+@app.route('/auth', methods=['GET'])
+@cross_origin(origins=['http://localhost:3000'])
+def test_route():
+    return jsonify({'message': 'Ceci est un message de test depuis l\'API.'})
 
 @app.route('/images/<filename>')
 def serve_image(filename):
@@ -90,34 +163,6 @@ def upload_file():
         
         return jsonify({'success': 'Image téléchargée et enregistrée avec succès', 'image_path': file_path})
 
-    
-
-# Route pour récupérer les données de la table "Utilisateurs"
-@app.route('/login', methods=['POST'])
-@cross_origin(origins=['http://localhost:3000'])
-    
-def login():
-    data = request.json
-    nom_utilisateur = data['nom_utilisateur']
-    mot_de_passe = data['mot_de_passe']
-
-    cursor = db_connection.cursor()
-    cursor.execute('SELECT * FROM Utilisateurs WHERE nom_utilisateur = %s AND mot_de_passe = %s;', (nom_utilisateur, mot_de_passe))
-    utilisateur = cursor.fetchone()
-    cursor.close()
-
-    if utilisateur:
-        return jsonify({'status': 'success', 'message': 'Authentification réussie!'})
-    else:
-        return jsonify({'status': 'failure', 'message': 'Authentification échouée!'}), 401
-
-
-
-# Route pour l'authentification
-@app.route('/auth', methods=['GET'])
-@cross_origin(origins=['http://localhost:3000'])
-def test_route():
-    return jsonify({'message': 'Ceci est un message de test depuis l\'API.'})
 
 
 
