@@ -73,35 +73,49 @@ def serve_image(filename):
 
 @app.route('/addProductWithImage', methods=['POST'])
 def add_product_with_image():
+    # Vérifier si un fichier a été envoyé dans la requête
     if 'file' not in request.files:
         return jsonify({'error': 'Pas de fichier fourni'}), 400
     file = request.files['file']
+    # Vérifier si un fichier a été sélectionné
     if file.filename == '':
         return jsonify({'error': 'Pas de fichier sélectionné'}), 400
 
+    # Sécuriser le nom du fichier pour éviter les problèmes de sécurité
     filename = secure_filename(file.filename)
     file_path = os.path.join(UPLOAD_FOLDER, filename)
+    # Enregistrer le fichier dans le dossier spécifié
     file.save(file_path)
 
+    # Récupérer les données du produit depuis le formulaire
     libelle = request.form['libelle']
     description = request.form['description']
     prix = request.form['prix']
     categorie_id = request.form['categorie_id']
 
+    # Connexion à la base de données pour l'insertion du produit
     cursor = db_connection.cursor()
 
     try:
+        # Insérer les informations du produit dans la base de données
         cursor.execute("INSERT INTO produits (libelle, description, prix, prix_original, image_url, categorie_id) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id;", 
-                       (libelle, description, prix, prix,file_path, categorie_id))
+                       (libelle, description, prix, prix, file_path, categorie_id))
 
+        # Récupérer l'ID du produit nouvellement créé
         product_id = cursor.fetchone()[0]
+
+        # Valider l'opération dans la base de données
         db_connection.commit()
     except Exception as e:
+        # Gérer les erreurs lors de l'insertion en base de données
         return jsonify({'error': 'Erreur lors de linsertion en base de données', 'details': str(e)}), 500
     finally:
+        # Fermer le curseur pour libérer la connexion à la base de données
         cursor.close()
 
+    # Renvoyer une réponse JSON confirmant le succès de l'opération
     return jsonify({'success': 'Produit ajouté avec succès', 'id': product_id})
+
 
 
 
@@ -255,42 +269,63 @@ def get_pantalon_produits():
 @app.route('/categorie', methods=['GET'])
 @cross_origin(origins=['http://localhost:3000'])
 def get_categories():
+    # Ouvrir une nouvelle connexion avec la base de données pour effectuer des requêtes
     cursor = db_connection.cursor()
+
+    # Exécuter une requête SQL pour récupérer toutes les données de la table 'categories'
     cursor.execute('SELECT * FROM categories;')
+
+    # Récupérer toutes les lignes de la réponse de la requête
     categories = cursor.fetchall()
+
+    # Fermer le curseur pour libérer la connexion à la base de données
     cursor.close()
 
+    # Préparer la réponse JSON en transformant les données de la base de données
+    # en un format approprié pour le client
     response = []
-
     for category in categories:
         item = {
-            'id': category[0],
-            'libelle_categories': category[1],
+            'id': category[0],               # ID de la catégorie
+            'libelle_categories': category[1],  # Libellé/nom de la catégorie
         }
         response.append(item)
 
+    # Renvoyer les données des catégories au format JSON pour qu'elles puissent
+    # être facilement consommées par le client/front-end
     return jsonify(response)
+
 
 
 @app.route('/update-product-info', methods=['POST'])
 def update_product_info():
     try:
+        # Récupérer les données envoyées par le client en format JSON
         data = request.get_json()
-        product_id = data['product_id']
-        new_price = data['new_price']
-        date_debut_promotion = data['date_debut_promotion']
-        date_fin_promotion = data['date_fin_promotion']
+        product_id = data['product_id']          # L'identifiant du produit à mettre à jour
+        new_price = data['new_price']            # Le nouveau prix du produit
+        date_debut_promotion = data['date_debut_promotion']  # La nouvelle date de début de la promotion
+        date_fin_promotion = data['date_fin_promotion']      # La nouvelle date de fin de la promotion
 
+        # Ouvrir une connexion à la base de données
         cursor = db_connection.cursor()
-        # Mettre à jour le prix, la date de début et de fin de promotion
+
+        # Exécuter la requête SQL pour mettre à jour les informations du produit
         cursor.execute("UPDATE produits SET prix = %s, date_debut_promotion = %s, date_fin_promotion = %s WHERE id = %s", 
                        (new_price, date_debut_promotion, date_fin_promotion, product_id))
+
+        # Valider la transaction dans la base de données
         db_connection.commit()
+
+        # Fermer le curseur pour libérer la connexion à la base de données
         cursor.close()
 
+        # Renvoyer une réponse JSON indiquant le succès de la mise à jour
         return jsonify({'message': 'Prix et dates de promotion mises à jour avec succès'}), 200
     except Exception as e:
+        # En cas d'erreur, renvoyer une réponse JSON avec les détails de l'erreur
         return jsonify({'error': str(e)}), 500
+
 
 
 
@@ -326,19 +361,34 @@ def reset_product_price():
 @app.route('/nvproduits', methods=['POST'])
 @cross_origin(origins=['http://localhost:3000'])
 def add_product():
-
+    # Récupérer les données du produit envoyées par le client en format JSON
     product_data = request.json
+
+    # Ouvrir une connexion à la base de données
     cursor = db_connection.cursor()
+
+    # Exécuter la requête SQL pour insérer un nouveau produit dans la base de données
+    # Les données du produit sont extraites de la requête JSON
     cursor.execute(
-    "INSERT INTO produits (libelle, description, prix, categorie_id) VALUES (%s, %s, %s, %s) RETURNING id;",
-    (product_data['libelle'], product_data['description'], product_data['prix'], product_data['categorie_id']))
+        "INSERT INTO produits (libelle, description, prix, categorie_id) VALUES (%s, %s, %s, %s) RETURNING id;",
+        (product_data['libelle'], product_data['description'], product_data['prix'], product_data['categorie_id'])
+    )
+
+    # Récupérer l'identifiant du produit nouvellement inséré
     product_id = cursor.fetchone()[0]
+
+    # Valider la transaction dans la base de données
     db_connection.commit()
+
+    # Fermer le curseur pour libérer la connexion à la base de données
     cursor.close()
 
-    return jsonify({"id": product_id}), 201  # 201 Created
+    # Renvoyer une réponse JSON avec l'identifiant du produit créé
+    return jsonify({"id": product_id}), 201  # 201 Created indique une ressource créée avec succès
 
+# Exécuter l'application avec le mode débogage activé sur le port 3001
 if __name__ == '__main__':
     app.run(debug=True, port=3001)
+
 
 

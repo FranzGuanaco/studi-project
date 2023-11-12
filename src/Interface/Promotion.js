@@ -11,89 +11,82 @@ import { useNavigate } from 'react-router-dom';
 
 const Promotion = () => {
     const location = useLocation();
+    // Utilisez l'état pour gérer les données du produit, le prix original, la réduction et les dates de promotion
     const [productData, setProductData] = useState(location.state?.productdata);
-    const [originalPrice, setOriginalPrice] = useState(productData?.prix); // Stockez le prix original
-    const [discount, setDiscount] = useState('');
-    const [date_debut_promotion, setDebut] = useState('');
-    const [date_fin_promotion, setFin] = useState('');
+    const [originalPrice, setOriginalPrice] = useState(productData?.prix); // Stockez le prix original du produit
+    const [discount, setDiscount] = useState(''); // Pourcentage de réduction
+    const [date_debut_promotion, setDebut] = useState(''); // Date de début de la promotion
+    const [date_fin_promotion, setFin] = useState(''); // Date de fin de la promotion
 
     useEffect(() => {
-        // Si productData change, mettez à jour le prix original
+        // Mettre à jour le prix original lorsque productData change
         setOriginalPrice(productData?.prix);
     }, [productData]);
 
-
+    // Fonction pour résoudre l'URL de l'image
     function resolveImageUrl(imageUrl) {
+        // Si l'URL de l'image commence par '/Users', modifiez-la pour qu'elle pointe vers le serveur
         if (imageUrl.startsWith('/Users')) {
             return `http://localhost:3001/images/${imageUrl.split('/').pop()}`;
         }
         return imageUrl;
     }
 
+    // Gestionnaire pour le changement de la réduction
     const handleDiscountChange = (event) => {
         setDiscount(event.target.value);
     };
 
+    // Appliquer la réduction
     const applyDiscount = () => {
-        const formData = new FormData();
-        formData.append('date_debut_promotion', date_debut_promotion);
-        formData.append('date_fin_promotion', date_fin_promotion);
-        // Si la réduction est vide, rétablissez le prix original
+        // Si aucune réduction n'est appliquée, rétablissez le prix original
         if (!discount && originalPrice) {
             setProductData({ ...productData, prix: originalPrice });
             return;
-            
         }
 
-        // Appliquez la réduction
+        // Calculez le prix avec la réduction appliquée
         const discountedPrice = originalPrice - (originalPrice * discount / 100);
         setProductData({ ...productData, prix: discountedPrice.toFixed(2) });
 
-        // Envoyez la requête POST à l'API Flask pour mettre à jour la base de données
-    axios
-        .post('http://localhost:3001/update-product-info', {
+        // Envoyez la requête POST à l'API Flask pour mettre à jour les informations du produit
+        axios.post('http://localhost:3001/update-product-info', {
             product_id: productData.id,
-            new_price: discountedPrice,  // Le nouveau prix calculé
-            date_debut_promotion: date_debut_promotion,
-            date_fin_promotion: date_fin_promotion
+            new_price: discountedPrice,
+            date_debut_promotion,
+            date_fin_promotion
         })
         .then(response => {
-            console.log(response.data.message); // Affichez le message de succès ou d'erreur de l'API
-            
+            console.log(response.data.message); // Log le message de succès ou d'erreur de l'API
         })
         .catch(error => {
             console.error('Erreur lors de la mise à jour de la base de données :', error);
         });
     };
 
-
+    // Réinitialiser le prix du produit à sa valeur originale
     const Reload = () => {
-        // Réinitialisez le prix avec la valeur originale
         setProductData({ ...productData, prix: originalPrice });
 
-        // Envoyez la requête POST à l'API Flask pour mettre à jour la base de données avec le prix original
-        axios
-            .post('http://localhost:3001/reset-product-price', {
-                product_id: productData.id,
-            })
-            .then(response => {
-                console.log(response.data.message);
-                // Rechargez la page après avoir réinitialisé le prix
-                window.location.reload();
-            })
-            .catch(error => {
-                console.error('Erreur lors de la réinitialisation du prix :', error);
-            });
+        // Envoyez la requête POST à l'API Flask pour réinitialiser le prix
+        axios.post('http://localhost:3001/reset-product-price', {
+            product_id: productData.id,
+        })
+        .then(response => {
+            console.log(response.data.message);
+            window.location.reload();
+        })
+        .catch(error => {
+            console.error('Erreur lors de la réinitialisation du prix :', error);
+        });
     };
 
+    // Utiliser navigate pour rediriger vers la page du catalogue
     const navigate = useNavigate();
-
     const goToCatalogue = () => {
-      navigate('/Catalogue')
-      console.log('test')
-  };
-
-
+        navigate('/Catalogue');
+        console.log('test');
+    };
     return (
         <div className="App" style={{ display: 'flex', flexDirection: 'column' }}>
             <div className="NavStyle">

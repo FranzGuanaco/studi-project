@@ -8,13 +8,15 @@ class AuthPage extends React.Component {
   constructor(props) {
     super(props);
 
+    // Initialisation de l'état du composant
     this.state = {
       userName: "",
-      password: null, // Nouvelle propriété pour stocker le token
+      password: null, // Propriété pour stocker le mot de passe
     };
   }
 
   componentDidMount() {
+    // Effectuer une requête GET au montage du composant pour tester l'authentification
     axios.get('http://localhost:3001/auth')
       .then(response => {
         console.log(response.data);
@@ -24,14 +26,16 @@ class AuthPage extends React.Component {
       });
   }
 
+  // Gestionnaire de changement pour le champ nom d'utilisateur
   handleUsernameChange = (event) => {
     this.setState({ userName: event.target.value });
   }  
 
-  // changement d'information pour le nom de l'utilisateur et le mdp
+  // Gestionnaire de soumission du formulaire
   handleSubmit = (event) => {
     event.preventDefault();
     
+    // Effectuer une requête POST pour l'authentification
     axios.post('http://localhost:3001/login', {
       nom_utilisateur: this.state.userName,
       mot_de_passe: this.state.password
@@ -39,7 +43,7 @@ class AuthPage extends React.Component {
     .then(response => {
       if(response.data.status === 'success') {
         alert(response.data.message);
-        // Ici, vous pouvez également rediriger l'utilisateur vers une autre page ou effectuer d'autres actions selon les besoins.
+        // Redirection de l'utilisateur en cas de succès
         const redirectUrl = `/Admin?username=${this.state.userName}`;
         window.location.href = redirectUrl;
       } else {
@@ -50,20 +54,18 @@ class AuthPage extends React.Component {
       console.error('Erreur lors de la requête:', error);
     });
   }
-  
+
+  // Gestionnaire de changement pour le champ mot de passe
   handlePasswordChange = (event) => {
     this.setState({ password: event.target.value });
   }
 
   render() {
-    const { userName } = this.state;
-    const {password} = this.state
+    const { userName, password } = this.state;
 
     return (
       <div className="Id">
-     
-        <h2>{userName}</h2>
-     
+        {/* Formulaire d'authentification */}
         <form className="formBox" onSubmit={this.handleSubmit}>
           <label htmlFor="username" style={{margin:'auto'}}>{this.props.title} :</label>
           <input type="text" id="username" name="username" value={userName} onChange={this.handleUsernameChange} placeholder="" />
@@ -76,10 +78,11 @@ class AuthPage extends React.Component {
   }
 }
 
+// Valeurs par défaut des propriétés
 AuthPage.defaultProps = {
   title: 'Username',
   title2: 'Password',
-}
+};
 
 export default AuthPage;
 

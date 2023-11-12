@@ -6,79 +6,67 @@ import ProductBox from '../Component/Product/ProductBox';
 import { useNavigate } from 'react-router-dom';
 
 const Catalogue = () => {
-
+    // Fonction pour traiter les URLs d'image
     function resolveImageUrl(imageUrl) {
-        // Si l'URL commence par "/Users" (ou tout autre chemin local), alors on la considère comme locale
         if (imageUrl.startsWith('/Users')) {
             return `http://localhost:3001/images/${imageUrl.split('/').pop()}`;
         }
-        // Sinon, on retourne l'URL telle quelle
         return imageUrl;
     }
 
-        const navigate = useNavigate();
-        const [filteredCategories, setFilteredCategories] = useState(null);
-        const [products, setProducts] = useState([]);
-        const [categorie, SetCategorie] = useState([]);
-      
-        
+    const navigate = useNavigate();
+    // État pour gérer les catégories filtrées et les produits
+    const [filteredCategories, setFilteredCategories] = useState(null);
+    const [products, setProducts] = useState([]);
+    const [categorie, SetCategorie] = useState([]);
 
+    // Fonction pour naviguer vers une autre page avec les données du produit
     function Exportdata(productdata) {
-      // Faites quelque chose lorsque le composant est cliqué.
-      navigate('/Admin/Promotion', { state: { productdata } });
-  }
-
-  useEffect(() => {
-    if (filteredCategories != null) {
-        console.log(`voici ${filteredCategories}`);
-
-        axios.get(`http://localhost:3001/filtre_produits`, {
-            params: {
-                categorie_id: `${filteredCategories}`
-            }
-        })
-        .then(response => {
-            setProducts(response.data);
-            console.log('Pantalon products fetched');
-        })
-        .catch(error => console.error('Error fetching pantalon products:', error));
-    } else {
-        axios.get('http://localhost:3001/produits')
-        .then(response => {
-            setProducts(response.data);
-            console.log('All products fetched');
-        })
-        .catch(error => console.error('Error fetching products:', error));
+        navigate('/Admin/Promotion', { state: { productdata } });
     }
-}, [filteredCategories]);
 
+    // Chargement des produits en fonction de la catégorie sélectionnée
+    useEffect(() => {
+        if (filteredCategories != null) {
+            axios.get(`http://localhost:3001/filtre_produits`, {
+                params: {
+                    categorie_id: `${filteredCategories}`
+                }
+            })
+            .then(response => {
+                setProducts(response.data);
+            })
+            .catch(error => console.error('Error fetching filtered products:', error));
+        } else {
+            axios.get('http://localhost:3001/produits')
+            .then(response => {
+                setProducts(response.data);
+            })
+            .catch(error => console.error('Error fetching all products:', error));
+        }
+    }, [filteredCategories]);
+
+    // Chargement des catégories au montage du composant
     useEffect(() => {
         axios.get("http://localhost:3001/categorie")
             .then(response => {
                 SetCategorie(response.data);
-                console.log(response.data);
             })
-            .catch(error => console.error("Erreur lors de la récupération des categories:", error));
+            .catch(error => console.error("Error fetching categories:", error));
     }, []);
 
+    // Extraction des noms uniques des catégories pour le filtrage
     const uniqueCategories = [...new Set(products.map(product => product.categorie_libelle))];
 
+    // Gestion du clic sur les options de catégorie
+    const handleOptionClick = (option) => {
+        setFilteredCategories(option ? [`${option}`] : []);
+    };
 
-  const handleOptionClick = (option) => {
-    if (option != null) {
-        setFilteredCategories([`${option}`]); // If 'pantalon' is clicked, set filteredCategories to only 'pantalon'
-        console.log(`${option}`);
-    } else {
-        setFilteredCategories([]); // Otherwise, reset to show all categories.
-        console.log(`${option}`);
-    }
-};
-
+    // Navigation vers la page Admin
     const goToAdmin = () => {
-             navigate('/Admin')
-             console.log('test')
-            };
-
+        navigate('/Admin');
+    };
     return (
         <div className="App" style={{ display: 'flex', flexDirection: 'column' }}>
             <div className="NavStyle">
