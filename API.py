@@ -86,15 +86,13 @@ def add_product_with_image():
     libelle = request.form['libelle']
     description = request.form['description']
     prix = request.form['prix']
-    date_debut_promotion = request.form['date_debut_promotion']
-    date_fin_promotion = request.form['date_fin_promotion']
     categorie_id = request.form['categorie_id']
 
     cursor = db_connection.cursor()
 
     try:
-        cursor.execute("INSERT INTO produits (libelle, description, prix, prix_original, date_debut_promotion, date_fin_promotion, image_url, categorie_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;", 
-                       (libelle, description, prix, prix, date_debut_promotion, date_fin_promotion, file_path, categorie_id))
+        cursor.execute("INSERT INTO produits (libelle, description, prix, prix_original, image_url, categorie_id) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id;", 
+                       (libelle, description, prix, prix,file_path, categorie_id))
 
         product_id = cursor.fetchone()[0]
         db_connection.commit()
@@ -280,14 +278,17 @@ def update_product_info():
         data = request.get_json()
         product_id = data['product_id']
         new_price = data['new_price']
+        date_debut_promotion = data['date_debut_promotion']
+        date_fin_promotion = data['date_fin_promotion']
 
         cursor = db_connection.cursor()
-        # Mettre à jour à la fois le prix et le statut de promotion
-        cursor.execute("UPDATE produits SET prix = %s, statut_promotion = true WHERE id = %s", (new_price, product_id))
+        # Mettre à jour le prix, la date de début et de fin de promotion
+        cursor.execute("UPDATE produits SET prix = %s, date_debut_promotion = %s, date_fin_promotion = %s WHERE id = %s", 
+                       (new_price, date_debut_promotion, date_fin_promotion, product_id))
         db_connection.commit()
         cursor.close()
 
-        return jsonify({'message': 'Prix et statut de promotion mis à jour avec succès'}), 200
+        return jsonify({'message': 'Prix et dates de promotion mises à jour avec succès'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

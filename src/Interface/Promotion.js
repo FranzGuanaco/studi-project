@@ -5,6 +5,7 @@ import Navbar from '../Component/Navbar/navbar'; // Assurez-vous que le chemin e
 import ProductBox from '../Component/Product/ProductBox'; // Assurez-vous que le chemin est correct
 import { NumberInputWithSymbol } from '../Component/Input/Numberinput'; // Assurez-vous que le chemin est correct
 import Button from '../Component/Button';
+import { Inputdate } from '../Component/Input/Inputdate';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -13,6 +14,8 @@ const Promotion = () => {
     const [productData, setProductData] = useState(location.state?.productdata);
     const [originalPrice, setOriginalPrice] = useState(productData?.prix); // Stockez le prix original
     const [discount, setDiscount] = useState('');
+    const [date_debut_promotion, setDebut] = useState('');
+    const [date_fin_promotion, setFin] = useState('');
 
     useEffect(() => {
         // Si productData change, mettez à jour le prix original
@@ -32,30 +35,41 @@ const Promotion = () => {
     };
 
     const applyDiscount = () => {
+        const formData = new FormData();
+        formData.append('date_debut_promotion', date_debut_promotion);
+        formData.append('date_fin_promotion', date_fin_promotion);
         // Si la réduction est vide, rétablissez le prix original
         if (!discount && originalPrice) {
             setProductData({ ...productData, prix: originalPrice });
             return;
+            
         }
+
         // Appliquez la réduction
         const discountedPrice = originalPrice - (originalPrice * discount / 100);
         setProductData({ ...productData, prix: discountedPrice.toFixed(2) });
 
         // Envoyez la requête POST à l'API Flask pour mettre à jour la base de données
-        axios.post('http://localhost:3001/update-product-info', {
-        product_id: productData.id,
-        new_price: discountedPrice,  // Le nouveau prix calculé
-    })
-    .then(response => {
-        console.log(response.data.message); // Affichez le message de succès de l'API
-        console.log('Prix et statut de la promotion modifié');
-    })
-    .catch(error => {
-        console.error('Erreur lors de la mise à jour des informations du produit :', error);
-    });
-};
+    axios
+        .post('http://localhost:3001/update-product-info', {
+            product_id: productData.id,
+            new_price: discountedPrice,  // Le nouveau prix calculé
+            date_debut_promotion: date_debut_promotion,
+            date_fin_promotion: date_fin_promotion
+        })
+        .then(response => {
+            console.log(response.data.message); // Affichez le message de succès ou d'erreur de l'API
+            
+        })
+        .catch(error => {
+            console.error('Erreur lors de la mise à jour de la base de données :', error);
+        });
+    };
+
 
     const Reload = () => {
+        // Réinitialisez le prix avec la valeur originale
+        setProductData({ ...productData, prix: originalPrice });
 
         // Envoyez la requête POST à l'API Flask pour mettre à jour la base de données avec le prix original
         axios
@@ -64,11 +78,8 @@ const Promotion = () => {
             })
             .then(response => {
                 console.log(response.data.message);
-                console.log("reussi");
                 // Rechargez la page après avoir réinitialisé le prix
-                setOriginalPrice(response.data.prix_original);
-             
-                
+                window.location.reload();
             })
             .catch(error => {
                 console.error('Erreur lors de la réinitialisation du prix :', error);
@@ -78,15 +89,15 @@ const Promotion = () => {
     const navigate = useNavigate();
 
     const goToCatalogue = () => {
-        navigate('/Catalogue')
-        console.log('test')
-    };
+      navigate('/Catalogue')
+      console.log('test')
+  };
 
 
     return (
         <div className="App" style={{ display: 'flex', flexDirection: 'column' }}>
             <div className="NavStyle">
-                <Navbar buttonColor="green" text="Catalogue" handleClick={goToCatalogue}/>
+                <Navbar showSearchbar={false} showWelcomeText={true} buttonColor="green" text="Catalogue" handleClick={goToCatalogue}/>
             </div>
             {productData && (
                 <div className="Boxcontent" style={{ marginLeft: "40%", marginTop: '5%', width: "35%", position: "fixed" }}>
@@ -110,6 +121,12 @@ const Promotion = () => {
                             symbol="%"
                             onChange={handleDiscountChange}
                         />
+                         <div className="InputdateStyle" style={{ marginTop: '20px' }}>
+                    <Inputdate label={'Date de début'} id="début" value={date_debut_promotion} onChange={e => setDebut(e.target.value)}/>
+                    </div>
+                    <div className="InputdateStyle" style={{ marginTop: '20px' }}>
+                    <Inputdate label={'Date de fin'} id="fin" value={date_fin_promotion} onChange={e => setFin(e.target.value)}/>
+                    </div>
                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', paddingTop:"10%" }}>
                         <Button onClick={applyDiscount} color='black' text='Réduction'></Button>
                          <Button onClick={Reload} color='gray' text='Retour au prix original'></Button>
