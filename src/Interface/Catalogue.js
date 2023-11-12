@@ -16,7 +16,6 @@ const Catalogue = () => {
         return imageUrl;
     }
 
-  
         const navigate = useNavigate();
         const [filteredCategories, setFilteredCategories] = useState(null);
         const [products, setProducts] = useState([]);
@@ -33,7 +32,7 @@ const Catalogue = () => {
     if (filteredCategories != null) {
         console.log(`voici ${filteredCategories}`);
 
-        axios.get(`http://localhost:3001/pantalon`, {
+        axios.get(`http://localhost:3001/filtre_produits`, {
             params: {
                 categorie_id: `${filteredCategories}`
             }
@@ -100,8 +99,10 @@ const Catalogue = () => {
                     key={filteredProduct.id}
                     imageUrl={resolveImageUrl(filteredProduct.image_url)}
                     productName={filteredProduct.libelle} 
-                    shortDescription={filteredProduct.description}
-                    display={true} 
+                    shortDescription={filteredProduct.statut_promotion ? 
+                    <strong>{`${filteredProduct.prix}€`}</strong> : 
+                        `${filteredProduct.prix}€`}
+                        display={true}  
                         />
                      </div>
                         ))}

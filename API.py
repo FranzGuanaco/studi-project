@@ -8,13 +8,11 @@ from flask_bcrypt import Bcrypt
 
 app = Flask(__name__)
 CORS(app)
-# Initialiser bcrypt
 bcrypt = Bcrypt()
 
 
-try:
     # Configuration de la base de données
-    db_connection = psycopg2.connect(
+db_connection = psycopg2.connect(
         host='localhost',
         port=5432,
         user='pierrechevin',
@@ -22,34 +20,6 @@ try:
         database='mercadona'
     )
 
-    cursor = db_connection.cursor()
-
-    # Sélectionner tous les utilisateurs
-    cursor.execute("SELECT id, mot_de_passe FROM utilisateurs;")
-    users = cursor.fetchall()
-
-    # Hacher chaque mot de passe et mettre à jour la base de données
-    for user_id, mot_de_passe in users:
-        hashed_pw = bcrypt.generate_password_hash(mot_de_passe).decode('utf-8')
-        cursor.execute("UPDATE utilisateurs SET mot_de_passe = %s WHERE id = %s;", (hashed_pw, user_id))
-
-    # Valider les changements
-    db_connection.commit()
-
-finally:
-    # Fermer la connexion
-    if db_connection:
-        cursor.close()
-
-
-print("Mise à jour des mots de passe terminée.")
-
-
-mot_de_passe_test = 'Studi'
-mot_de_passe_hash = bcrypt.generate_password_hash(mot_de_passe_test).decode('utf-8')
-
-print("Mot de passe haché pour test:", mot_de_passe_hash)
-print("Correspond au hachage de la base de données:", bcrypt.check_password_hash(mot_de_passe_hash, mot_de_passe_test))
 
 UPLOAD_FOLDER = '/Users/pierrechevin/Studi project/studi-project/src/Pic'
 
@@ -87,7 +57,7 @@ def login():
         print("Erreur lors de la connexion à la base de données:", str(e))
         return jsonify({'status': 'failure', 'message': 'Erreur interne du serveur'}), 500
 
-   
+  
 
 
 # Route pour l'authentification
@@ -226,7 +196,7 @@ def get_produits():
 
 
 
-@app.route('/pantalon', methods=['GET'])
+@app.route('/filtre_produits', methods=['GET'])
 @cross_origin(origins=['http://localhost:3000'])
 def get_pantalon_produits():
     cursor = db_connection.cursor()
@@ -304,24 +274,23 @@ def get_categories():
     return jsonify(response)
 
 
-@app.route('/update-product-price', methods=['POST'])
-def update_product_price():
+@app.route('/update-product-info', methods=['POST'])
+def update_product_info():
     try:
         data = request.get_json()
         product_id = data['product_id']
         new_price = data['new_price']
 
         cursor = db_connection.cursor()
-        cursor.execute("UPDATE produits SET prix = %s WHERE id = %s", (new_price, product_id))
+        # Mettre à jour à la fois le prix et le statut de promotion
+        cursor.execute("UPDATE produits SET prix = %s, statut_promotion = true WHERE id = %s", (new_price, product_id))
         db_connection.commit()
         cursor.close()
 
-        return jsonify({'message': 'Prix mis à jour avec succès'}), 200
+        return jsonify({'message': 'Prix et statut de promotion mis à jour avec succès'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-
-from flask import Flask, jsonify, request
 
 
 

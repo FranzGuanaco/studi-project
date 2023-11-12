@@ -5,6 +5,7 @@ import Navbar from '../Component/Navbar/navbar'; // Assurez-vous que le chemin e
 import ProductBox from '../Component/Product/ProductBox'; // Assurez-vous que le chemin est correct
 import { NumberInputWithSymbol } from '../Component/Input/Numberinput'; // Assurez-vous que le chemin est correct
 import Button from '../Component/Button';
+import { useNavigate } from 'react-router-dom';
 
 
 const Promotion = () => {
@@ -35,27 +36,24 @@ const Promotion = () => {
         if (!discount && originalPrice) {
             setProductData({ ...productData, prix: originalPrice });
             return;
-            
         }
-
         // Appliquez la réduction
         const discountedPrice = originalPrice - (originalPrice * discount / 100);
         setProductData({ ...productData, prix: discountedPrice.toFixed(2) });
 
         // Envoyez la requête POST à l'API Flask pour mettre à jour la base de données
-    axios
-        .post('http://localhost:3001/update-product-price', {
-            product_id: productData.id,
-            new_price: discountedPrice,
-        })
-        .then(response => {
-            console.log(response.data.message); // Affichez le message de succès ou d'erreur de l'API
-        })
-        .catch(error => {
-            console.error('Erreur lors de la mise à jour de la base de données :', error);
-        });
-    };
-
+        axios.post('http://localhost:3001/update-product-info', {
+        product_id: productData.id,
+        new_price: discountedPrice,  // Le nouveau prix calculé
+    })
+    .then(response => {
+        console.log(response.data.message); // Affichez le message de succès de l'API
+        console.log('Prix et statut de la promotion modifié');
+    })
+    .catch(error => {
+        console.error('Erreur lors de la mise à jour des informations du produit :', error);
+    });
+};
 
     const Reload = () => {
 
@@ -77,11 +75,18 @@ const Promotion = () => {
             });
     };
 
+    const navigate = useNavigate();
+
+    const goToCatalogue = () => {
+        navigate('/Catalogue')
+        console.log('test')
+    };
+
 
     return (
         <div className="App" style={{ display: 'flex', flexDirection: 'column' }}>
             <div className="NavStyle">
-                <Navbar />
+                <Navbar buttonColor="green" text="Catalogue" handleClick={goToCatalogue}/>
             </div>
             {productData && (
                 <div className="Boxcontent" style={{ marginLeft: "40%", marginTop: '5%', width: "35%", position: "fixed" }}>
