@@ -9,7 +9,6 @@ import { DropdownInput } from '../Component/Input/Dropdown';
 import { NumberInputWithSymbol } from '../Component/Input/Numberinput';
 import { useNavigate } from 'react-router-dom';
 import '../App.css'
-import { Inputdate } from '../Component/Input/Inputdate';
 
 
 const Admin = () => {
