@@ -11,7 +11,7 @@ function App() {
         <div className="App">
           <BrowserRouter>
           <Routes>
-            <Route path='/Auth' element={<AuthPage/>} />
+            <Route path='/' element={<AuthPage/>} />
             <Route path='/Admin' exact element={<Admin/>} />
             <Route path='/Catalogue' exact element={<Catalogue/>}/>
             <Route path='/Admin/Promotion' exact element={<Promotion/>} />
