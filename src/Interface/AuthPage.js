@@ -17,7 +17,7 @@ class AuthPage extends React.Component {
 
   componentDidMount() {
     // Effectuer une requête GET au montage du composant pour tester l'authentification
-    axios.get('http://localhost:3001/auth')
+    axios.get('https://api-studi-b69c1cb02fce.herokuapp.com/auth')
       .then(response => {
         console.log(response.data);
       })
